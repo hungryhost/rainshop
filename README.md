@@ -170,6 +170,7 @@ Example response:
     "orders_by_status": {
         "total_created": 0,
         "total_cancelled": 1,
+        "total_returned": 0,
         "total_payed": 3
     },
     "orders_by_monetary_stats": {
