@@ -148,6 +148,7 @@ def stats(request):
 		d_end = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
 		date_filter = Q(order_items__order__created_at__gte=d_start,
 						order_items__order__created_at__lte=d_end)
+		date_filter_orders = Q(created_at__gte=d_start, created_at__lte=d_end)
 	except Exception:
 		date_filter = None
 
@@ -177,7 +178,7 @@ def stats(request):
 			total_gross_income=total_gross_income,
 			total_cost=total_cost
 		)
-		orders = Order.objects.filter(date_filter).aggregate(
+		orders = Order.objects.filter(date_filter_orders).aggregate(
 			total_created=total_created,
 			total_cancelled=total_cancelled,
 			total_payed=total_payed,
