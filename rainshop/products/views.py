@@ -153,11 +153,12 @@ def stats(request):
 
 	total_ordered = Sum('order_items__quantity')
 	total_returned = Sum('order_items__quantity', filter=Q(order_items__order__status__in=['RETURNED', 'CANCELLED']))
-	total_created = Count('id', filter=Q(status='CREATED'))
 
+	total_created = Count('id', filter=Q(status='CREATED'))
 	total_all_statuses = Count('id')
 	total_cancelled = Count('id', filter=Q(status='CANCELLED'))
 	total_payed = Count('id', filter=Q(status='PAYED'))
+	total_returned_orders = Count('id', filter=Q(status='RETURNED'))
 
 	total_gross_income = Sum(
 		'order_items__order__order_price',
@@ -180,7 +181,8 @@ def stats(request):
 			total_created=total_created,
 			total_cancelled=total_cancelled,
 			total_payed=total_payed,
-			total_all_statuses=total_all_statuses
+			total_all_statuses=total_all_statuses,
+			total_returned_orders=total_returned_orders
 		)
 	else:
 		products = Product.objects.prefetch_related(
@@ -195,7 +197,8 @@ def stats(request):
 			total_created=total_created,
 			total_cancelled=total_cancelled,
 			total_payed=total_payed,
-			total_all_statuses=total_all_statuses
+			total_all_statuses=total_all_statuses,
+			total_returned_orders=total_returned_orders
 		)
 	total_ordered_data = {}
 	total_returned_data = {}
@@ -214,11 +217,12 @@ def stats(request):
 			total_clean_income[product.name] = None
 
 	res = {
-		'total_orders'           : orders['total_all_statuses'],
-		'total_ordered': total_ordered_data,
+		'total_orders'            : orders['total_all_statuses'],
+		'total_ordered'           : total_ordered_data,
 		'total_returned'          : total_returned_data,
 		'orders_by_status'        : {
 			'total_created'  : orders['total_created'],
+			'total_returned' : orders['total_returned_orders'],
 			'total_cancelled': orders['total_cancelled'],
 			'total_payed'    : orders['total_payed'],
 		},
