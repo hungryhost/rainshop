@@ -9,6 +9,9 @@ then
 
     echo "PostgreSQL started"
 fi
+echo "from django.contrib.auth import get_user_model;
+User = get_user_model()
+if not User.objects.filter(email='$DJANGO_ADMIN_EMAIL').exists(): User.objects.create_superuser(username='$DJANGO_ADMIN_USERNAME', email='$DJANGO_ADMIN_EMAIL', password='$DJANGO_ADMIN_PASSWORD')" | python manage.py shell
 
 python manage.py migrate
 python manage.py loaddata products.json --app products.Products
