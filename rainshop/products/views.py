@@ -6,6 +6,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, permissions, decorators, status
 from rest_framework.response import Response
 
+from orders.models import Order
 from .models import Product
 from .serializers import ProductSerializer, ProductUpdateSerializer
 
@@ -150,11 +151,14 @@ def stats(request):
 	except Exception:
 		date_filter = None
 
-	total_ordered = Count('order_items')
-	total_created = Count('order_items', filter=Q(order_items__order__status='CREATED'))
-	total_cancelled = Count('order_items', filter=Q(order_items__order__status='CANCELLED'))
-	total_returned = Count('order_items', filter=Q(order_items__order__status='RETURNED'))
-	total_payed = Count('order_items', filter=Q(order_items__order__status='PAYED'))
+	total_ordered = Sum('order_items__quantity')
+	total_returned = Sum('order_items__quantity', filter=Q(order_items__order__status__in=['RETURNED', 'CANCELLED']))
+	total_created = Count('id', filter=Q(status='CREATED'))
+
+	total_all_statuses = Count('id')
+	total_cancelled = Count('id', filter=Q(status='CANCELLED'))
+	total_payed = Count('id', filter=Q(status='PAYED'))
+
 	total_gross_income = Sum(
 		'order_items__order__order_price',
 		filter=Q(order_items__order__status__in=['PAYED'])
@@ -168,40 +172,40 @@ def stats(request):
 			'order_items', 'order_items__order'
 		).filter(date_filter).annotate(
 			total_ordered=total_ordered,
-			total_created=total_created,
-			total_cancelled=total_cancelled,
 			total_returned=total_returned,
-			total_payed=total_payed,
 			total_gross_income=total_gross_income,
 			total_cost=total_cost
+		)
+		orders = Order.objects.filter(date_filter).annotate(
+			total_created=total_created,
+			total_cancelled=total_cancelled,
+			total_payed=total_payed,
+			total_all_statuses=total_all_statuses
 		)
 	else:
 		products = Product.objects.prefetch_related(
 			'order_items', 'order_items__order'
 		).annotate(
 			total_ordered=total_ordered,
-			total_created=total_created,
-			total_cancelled=total_cancelled,
 			total_returned=total_returned,
-			total_payed=total_payed,
 			total_gross_income=total_gross_income,
 			total_cost=total_cost
 		)
+		orders = Order.objects.aggregate(
+			total_created=total_created,
+			total_cancelled=total_cancelled,
+			total_payed=total_payed,
+			total_all_statuses=total_all_statuses
+		)
 	total_ordered_data = {}
-	total_created_data = {}
-	total_cancelled_data = {}
 	total_returned_data = {}
-	total_payed_data = {}
 	total_gross_income_data = {}
 	total_cost_data = {}
 	total_clean_income = {}
 
 	for product in products:
 		total_ordered_data[product.name] = product.total_ordered
-		total_created_data[product.name] = product.total_created
-		total_cancelled_data[product.name] = product.total_cancelled
 		total_returned_data[product.name] = product.total_returned
-		total_payed_data[product.name] = product.total_payed
 		total_gross_income_data[product.name] = product.total_gross_income
 		total_cost_data[product.name] = product.total_cost
 		if product.total_cost is not None and product.total_gross_income is not None:
@@ -210,12 +214,13 @@ def stats(request):
 			total_clean_income[product.name] = None
 
 	res = {
-		'total_ordered'           : total_ordered_data,
+		'total_orders'           : orders['total_all_statuses'],
+		'total_ordered': total_ordered_data,
+		'total_returned'          : total_returned_data,
 		'orders_by_status'        : {
-			'total_created'  : total_created_data,
-			'total_cancelled': total_cancelled_data,
-			'total_returned' : total_returned_data,
-			'total_payed'    : total_payed_data,
+			'total_created'  : orders['total_created'],
+			'total_cancelled': orders['total_cancelled'],
+			'total_payed'    : orders['total_payed'],
 		},
 		'orders_by_monetary_stats': {
 			'total_gross_income': total_gross_income_data,
