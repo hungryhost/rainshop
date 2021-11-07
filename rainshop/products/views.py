@@ -177,7 +177,7 @@ def stats(request):
 			total_gross_income=total_gross_income,
 			total_cost=total_cost
 		)
-		orders = Order.objects.filter(date_filter).annotate(
+		orders = Order.objects.filter(date_filter).aggregate(
 			total_created=total_created,
 			total_cancelled=total_cancelled,
 			total_payed=total_payed,
@@ -217,19 +217,19 @@ def stats(request):
 			total_clean_income[product.name] = None
 
 	res = {
-		'total_orders'            : orders['total_all_statuses'],
-		'total_ordered'           : total_ordered_data,
-		'total_returned'          : total_returned_data,
-		'orders_by_status'        : {
-			'total_created'  : orders['total_created'],
-			'total_returned' : orders['total_returned_orders'],
+		'total_orders': orders['total_all_statuses'],
+		'total_ordered': total_ordered_data,
+		'total_returned': total_returned_data,
+		'orders_by_status': {
+			'total_created': orders['total_created'],
+			'total_returned': orders['total_returned_orders'],
 			'total_cancelled': orders['total_cancelled'],
-			'total_payed'    : orders['total_payed'],
+			'total_payed': orders['total_payed'],
 		},
 		'orders_by_monetary_stats': {
 			'total_gross_income': total_gross_income_data,
-			'total_cost'        : total_cost_data,
-			'total_income'      : total_clean_income
+			'total_cost': total_cost_data,
+			'total_income': total_clean_income
 		}
 	}
 	return Response(res, status.HTTP_200_OK)
