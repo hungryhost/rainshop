@@ -193,6 +193,10 @@ Example response:
 *Full documentation is available at https://projects.rainforest.yuryborodin.ru/api/v1/swagger/ or
 https://projects.rainforest.yuryborodin.ru/api/v1/redoc/*
 
+## Static files
+The app is deployed with static files served from the specific web-server folder *like (/var/www/static/)*, foregoing the
+```python manage.py collectstatic``` command. Adjustments are needed to be made in order
+for the app to work without the said folder mapped on the web-server side.
 
 ## Possible Improvements
 - Cancel/Refund operations could be moved to their respective celery tasks (mainly 
