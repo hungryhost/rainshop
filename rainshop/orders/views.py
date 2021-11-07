@@ -7,6 +7,7 @@ from rest_framework import generics, status, decorators
 from rest_framework import permissions
 from rest_framework.response import Response
 
+from .permissions import OrderOwner
 from .models import Order
 from .serializers import OrderSerializer, OrderCreateSerializer
 
@@ -117,7 +118,7 @@ class OrderRetrieveDestroyView(generics.RetrieveDestroyAPIView):
 		if self.request.method == 'GET':
 			permission_classes = []
 		else:
-			permission_classes = [permissions.IsAuthenticated]
+			permission_classes = [permissions.IsAuthenticated & OrderOwner]
 		return [permission() for permission in permission_classes]
 
 
@@ -162,7 +163,7 @@ class OrderReturnView(generics.DestroyAPIView):
 		if self.request.method == 'GET':
 			permission_classes = []
 		else:
-			permission_classes = [permissions.IsAuthenticated]
+			permission_classes = [permissions.IsAuthenticated & OrderOwner]
 		return [permission() for permission in permission_classes]
 
 

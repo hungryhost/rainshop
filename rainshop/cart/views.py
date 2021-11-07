@@ -7,6 +7,7 @@ from rest_framework import generics, status
 from rest_framework import permissions
 from rest_framework.response import Response
 
+from .permissions import CartOwner
 from .models import Cart
 from .serializers import CartSerializer, AddToCartSerializer, CartUpdateSerializer
 
@@ -79,7 +80,7 @@ class CartListCreateView(generics.ListCreateAPIView):
 class CartItemRetrieveUpdateRemoveView(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Cart.objects.all()
 	serializer_class = CartSerializer
-	permission_classes = [permissions.IsAuthenticated]
+	permission_classes = [permissions.IsAuthenticated & CartOwner]
 	http_method_names = ['get', 'put', 'delete', 'head', 'options', 'trace']
 
 	@swagger_auto_schema(
