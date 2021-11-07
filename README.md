@@ -60,7 +60,7 @@ Example request body:
 The token is used after in the Authorization header as
 ```Token <token>```
 ### Add product (requires authentication)
-Add product via ```POST /api/v1/products/``` endpoint.
+Add a product to the app via ```POST /api/v1/products/``` endpoint.
 Example request body:
 ```
 {
@@ -72,7 +72,7 @@ Example request body:
 ```
 
 ### List products
-Add product via ```GET /api/v1/products/``` endpoint.
+List products via ```GET /api/v1/products/``` endpoint.
 Example request body:
 ```
 {
@@ -107,7 +107,7 @@ Example request body:
 ```
 
 ### Add product to your cart (requires authentication)
-Add product via ```POST /api/v1/cart/``` endpoint.
+Add a product via ```POST /api/v1/cart/``` endpoint.
 Example request body:
 ```
 {
