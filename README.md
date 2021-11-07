@@ -48,7 +48,7 @@ is to 127.0.0.1:8081, but could be changed in the docker-compose.yml file.
 ## Example usage
 Usage of the app is quite simple as well.
 ### Obtain token 
-Obtain token for the user via ```POST /api/v1/token/```
+Obtain a token for the user via ```POST /api/v1/token/```
 Example request body:
 ```
 {
@@ -72,7 +72,7 @@ Example request body:
 ```
 
 ### List products
-List products via ```GET /api/v1/products/``` endpoint.
+List available products via ```GET /api/v1/products/``` endpoint.
 Example request body:
 ```
 {
@@ -107,7 +107,7 @@ Example request body:
 ```
 
 ### Add product to your cart (requires authentication)
-Add a product via ```POST /api/v1/cart/``` endpoint.
+Add a product to your cart via ```POST /api/v1/cart/``` endpoint.
 Example request body:
 ```
 {
@@ -141,10 +141,10 @@ Example response:
 }
 ```
 ### Place order (requires authentication)
-Place order via ```POST /api/v1/cart/``` endpoint with __empty request body__.
+Place an order via ```POST /api/v1/cart/``` endpoint with __empty request body__.
 
 ### Mimic payment via dummy endpoint
-Mimic payment callback for the specific order via ```GET api/v1/orders/{id}/payment-callback/ ```.
+Mimic a payment callback for the specific order via ```GET api/v1/orders/{id}/payment-callback/ ```.
 Changes the order's status to "PAYED".
 
 ### See stats 
