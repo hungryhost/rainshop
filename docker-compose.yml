@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  rainshop:
+    build: ./rainshop
+    container_name: rainshop_app
+    ports:
+      - '127.0.0.1:8081:8081'
+    env_file:
+      - ./rainshop/.env
+    command: bash -c "gunicorn rainshop.wsgi:application --bind 0.0.0.0:8081"
+    volumes:
+      - ./rainshop/:/usr/src/rainshop-app/
+    depends_on:
+      - postgres
+      - redis
+
+  celery:
+    container_name: cl01_rainshop_app
+    build: ./rainshop
+    command: celery -A rainshop worker -l info --purge
+    env_file:
+      - ./rainshop/.env
+    volumes:
+      - ./rainshop/:/usr/src/rainshop-app/
+    depends_on:
+      - rainshop
+
+  celery-beat:
+    container_name: clb01_rainshop_app
+    build: ./rainshop
+    command: celery -A rainshop beat -l info
+    env_file:
+      - ./rainshop/.env
+    volumes:
+      - ./rainshop/:/usr/src/rainshop-app/
+    depends_on:
+      - celery
+  postgres:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./postgres/.env
+
+  redis:
+    image: 'redis:alpine'
+    hostname: redis
+
+volumes:
+  postgres_data:
