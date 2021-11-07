@@ -13,29 +13,30 @@ services:
       - ./rainshop/:/usr/src/rainshop-app/
     depends_on:
       - postgres
-      - redis
+#      - redis
 
-  celery:
-    container_name: cl01_rainshop_app
-    build: ./rainshop
-    command: celery -A rainshop worker -l info --purge
-    env_file:
-      - ./rainshop/.env
-    volumes:
-      - ./rainshop/:/usr/src/rainshop-app/
-    depends_on:
-      - rainshop
+#  celery:
+#    container_name: cl01_rainshop_app
+#    build: ./rainshop
+#    command: celery -A rainshop worker -l info --purge
+#    env_file:
+#      - ./rainshop/.env
+#    volumes:
+#     - ./rainshop/:/usr/src/rainshop-app/
+#    depends_on:
+#      - rainshop
 
-  celery-beat:
-    container_name: clb01_rainshop_app
-    build: ./rainshop
-    command: celery -A rainshop beat -l info
-    env_file:
-      - ./rainshop/.env
-    volumes:
-      - ./rainshop/:/usr/src/rainshop-app/
-    depends_on:
-      - celery
+#  celery-beat:
+#    container_name: clb01_rainshop_app
+#    build: ./rainshop
+#    command: celery -A rainshop beat -l info
+#    env_file:
+#      - ./rainshop/.env
+#    volumes:
+#      - ./rainshop/:/usr/src/rainshop-app/
+#    depends_on:
+#      - celery
+
   postgres:
     image: postgres:12.0-alpine
     volumes:
@@ -43,9 +44,9 @@ services:
     env_file:
       - ./postgres/.env
 
-  redis:
-    image: 'redis:alpine'
-    hostname: redis
+#  redis:
+#    image: 'redis:alpine'
+#    hostname: redis
 
 volumes:
   postgres_data:
